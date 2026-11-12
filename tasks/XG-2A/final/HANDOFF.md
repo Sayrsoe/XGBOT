@@ -73,3 +73,19 @@ Local feature branch: `codex/xg-2a-contract-foundation`. The publication-time lo
 ## H. Next owner decision
 
 Recommended bootstrap: authorize one empty initial commit on remote main. Once that base exists, replay the local XG-2A implementation commit on top of it, verify the resulting feature tree and bounded tests, push only the feature branch and open a draft PR targeting main. An independent initial commit requires replay onto the common base so GitHub can compare the branches. The owner can also establish the initial base themselves. XG-2B remains a separate future decision.
+
+## XG-2A Publication and R1 Correction Addendum
+
+**13 November 2026, Asia/Bangkok — task 2.2.2.**
+
+The earlier sections preserve the original pre-publication record. The later owner-approved bootstrap created empty main at e3548df291b7cf1d460516d965a055179751277a and draft PR #1. The exact reviewed starting feature head was d3d83b7821dc6ac58ae987362a208d0704b702be. PR #1 was verified open, draft and unmerged for R1.
+
+R1 implementation commit is 1a76130c7118b09f9d3ddded7c184c6a34157686, tree 03ad7609bbae6a3a66fb027a0b9f165dc3f804e0. A following documentation-only commit carries this addendum and the numbered report/handover. The final publication head and tree are provided in the completion response and PR history. The tested implementation is preserved as an ancestor.
+
+The secondary event index rejects different fixture IDs for the same competition, season, kickoff, unordered team pair and methodology with fixture_alias. Same-ID corrections and exact replays remain valid. Older event declarations remain reserved within the batch, and side reversal cannot hide an alias. JSON version 0.1 is preserved.
+
+Python 3.12.10 ran all 33 contract tests successfully in 0.425 seconds, including the original 18 and 15 targeted tests. The targeted after-fix run passed 15 in 0.020 seconds. Its pre-fix run had 8 failures among 15, demonstrating the defect. The two README CLI examples retained their expected outcomes; the same-event/different-ID CLI pair rejected with fixture_alias and empty history. Git diff --check passed.
+
+The validator still relies on declared evidence and provides batch-local identity protection. Cross-batch storage, actual producer compatibility, trusted source time and other Python versions remain unverified. The owner has authorized this R1 publication only. Independent review and explicit owner approval are required for any merge decision. XG-2B remains unauthorized.
+
+[Task 2.2.2 report](../../2.2.2/final/XGBOT2.2.2report.md) and [handover](../../2.2.2/final/XGBOT2.2.2handover.md) contain the full evidence and continuation instructions.
