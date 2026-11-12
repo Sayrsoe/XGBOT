@@ -188,10 +188,20 @@ def _fingerprint(packet):
     return hashlib.sha256(canonical.encode("ascii")).hexdigest()
 
 
+def _event_identity(packet):
+    body = packet["payload"]
+    if body["kind"] != "completed_match":
+        return None
+    teams = tuple(sorted((body["home_team_id"], body["away_team_id"])))
+    return (packet["competition_id"], packet["season_id"], body["kickoff_utc"],
+            teams, packet["source"]["methodology_id"])
+
+
 def validate_collection(packets):
     """Validate an ordered batch, with each predecessor supplied before its successor."""
     records, history = [], []
     seen, latest = {}, {}
+    event_owners = {}
     valid = True
     for packet in packets:
         result = validate_packet(packet)
@@ -226,12 +236,19 @@ def validate_collection(packets):
                 issue = Issue("time_order", "$.recorded_at_utc", "Correction predates its predecessor")
             elif any(packet[k] != previous[k] for k in ("competition_id", "season_id", "source")):
                 issue = Issue("changed_scope", "$.correction", "Correction changed the record scope")
+        event = _event_identity(packet)
+        if issue is None and event_owners.get(event, key) != key:
+            issue = Issue("fixture_alias", "$.payload.fixture_id",
+                          "Event already belongs to another fixture ID; reconcile the declarations")
         if issue:
             records.append(PacketResult(identifier, "rejected", (issue,)))
             valid = False
         else:
             seen[identifier] = digest
             latest[key] = packet
+            if event is not None:
+                # Retain earlier event declarations so corrections cannot release aliases.
+                event_owners[event] = key
             history.append(identifier)
             records.append(PacketResult(identifier, "accepted"))
     if not records:

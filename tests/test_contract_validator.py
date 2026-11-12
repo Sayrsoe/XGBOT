@@ -21,6 +21,90 @@ def codes(result):
     return {issue.code for issue in result.issues}
 
 
+class FixtureAliasTests(unittest.TestCase):
+    def setUp(self):
+        self.match = example("02")
+        self.correction = example("08")
+        self.alias = copy.deepcopy(self.match)
+        self.alias["packet_id"] = "invented-alias"
+        self.alias["payload"]["fixture_id"] = "fixture-alias"
+
+    def assert_alias_rejected(self, packets):
+        before = copy.deepcopy(packets)
+        result = validate_collection(packets)
+        self.assertFalse(result.valid)
+        self.assertEqual(result.history, ())
+        self.assertIn("fixture_alias", codes(result.records[-1]))
+        self.assertEqual(packets, before)
+
+    def test_identical_statistics_alias(self):
+        self.assert_alias_rejected([self.match, self.alias])
+
+    def test_conflicting_xg_alias(self):
+        self.alias["payload"]["home_xg"].update(raw_text="9.00", value="9.00")
+        self.assert_alias_rejected([self.match, self.alias])
+
+    def test_conflicting_goals_alias(self):
+        self.alias["payload"]["away_goals"].update(raw_text="4", value=4)
+        self.assert_alias_rejected([self.match, self.alias])
+
+    def test_different_kickoff(self):
+        self.alias["payload"]["kickoff_utc"] = "2026-01-08T16:00:00Z"
+        self.assertTrue(validate_collection([self.match, self.alias]).valid)
+
+    def test_different_competition(self):
+        self.alias["competition_id"] = "other-competition"
+        self.assertTrue(validate_collection([self.match, self.alias]).valid)
+
+    def test_different_teams(self):
+        self.alias["payload"]["away_team_id"] = "amber-town"
+        self.assertTrue(validate_collection([self.match, self.alias]).valid)
+
+    def test_replay_and_correction_chain(self):
+        packets = [self.match, self.match, self.correction, self.correction]
+        before = copy.deepcopy(packets)
+        result = validate_collection(packets)
+        self.assertTrue(result.valid)
+        self.assertEqual([r.status for r in result.records], ["accepted", "duplicate", "accepted", "duplicate"])
+        self.assertEqual(result.history, (self.match["packet_id"], self.correction["packet_id"]))
+        self.assertEqual(packets, before)
+
+    def test_alias_after_correction(self):
+        self.assert_alias_rejected([self.match, self.correction, self.alias])
+
+    def test_swapped_sides_alias(self):
+        body = self.alias["payload"]
+        body["home_team_id"], body["away_team_id"] = body["away_team_id"], body["home_team_id"]
+        self.assert_alias_rejected([self.match, self.alias])
+
+    def test_capture_reference_cannot_hide_alias(self):
+        self.alias["source"]["reference"] = "invented:another-capture"
+        self.assert_alias_rejected([self.match, self.alias])
+
+    def test_different_methodology(self):
+        self.alias["source"]["methodology_id"] = "other-methodology"
+        self.assertTrue(validate_collection([self.match, self.alias]).valid)
+
+    def test_different_season(self):
+        self.alias["season_id"] = "season-beta"
+        self.assertTrue(validate_collection([self.match, self.alias]).valid)
+
+    def test_correction_cannot_move_into_another_fixture(self):
+        other = copy.deepcopy(self.alias)
+        other["payload"]["kickoff_utc"] = "2026-01-08T16:00:00Z"
+        self.correction["payload"]["kickoff_utc"] = other["payload"]["kickoff_utc"]
+        self.assert_alias_rejected([self.match, other, self.correction])
+
+    def test_old_event_remains_reserved_after_identity_correction(self):
+        self.correction["payload"]["kickoff_utc"] = "2026-01-08T16:00:00Z"
+        self.assert_alias_rejected([self.match, self.correction, self.alias])
+
+    def test_side_correction_on_same_fixture(self):
+        body = self.correction["payload"]
+        body["home_team_id"], body["away_team_id"] = body["away_team_id"], body["home_team_id"]
+        self.assertTrue(validate_collection([self.match, self.correction]).valid)
+
+
 class ContractTests(unittest.TestCase):
     def setUp(self):
         self.match = example("02")

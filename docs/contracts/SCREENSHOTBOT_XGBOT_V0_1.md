@@ -35,6 +35,10 @@ Use kind `completed_match`, a stable `fixture_id`, kickoff, distinct home and aw
 
 The identity key is the pair of payload kind and fixture/snapshot ID. IDs are stable across revisions and must be unique within each kind across the submitted history. Competition, season and source including methodology remain fixed for a correction.
 
+R1 additionally indexes completed-match events by competition, season, UTC kickoff, unordered team pair and source methodology ID. A different fixture ID claiming the same event yields `fixture_alias` and rejects the batch even if statistics agree. Swapped home/away declarations share this secondary key and require reconciliation. Capture references and packet IDs cannot distinguish events. Different competitions, seasons, kickoffs, team pairs or methodologies have distinct event keys. Methodology separation describes measurement scope and supplies no permission to combine observations as independent model evidence.
+
+The existing fixture ID and predecessor chain remain authoritative for explicit corrections, including a reviewed side or kickoff correction. Every accepted revision reserves its declared event key for that fixture throughout the batch. A correction cannot move into an event already owned by another fixture, and an earlier event declaration stays reserved after a correction. Reconcile ambiguous ownership outside this v0.1 batch rather than silently merge or reassign it. Exact accepted packet replays remain idempotent. League snapshot identity is unchanged. The JSON wire format remains version 0.1.
+
 - Replaying a known packet ID with the same canonical content returns `duplicate`. JSON whitespace and key order do not change that content. Changing the content under that ID yields `conflicting_packet`.
 - A second initial packet for the same active initial record is a duplicate if every field except packet ID agrees. Its alias contributes no history entry. Reference the accepted canonical packet ID for a correction.
 - Other parallel initial records for that identity yield `conflicting_record`, including competing captures. Resolve disagreement explicitly before submitting the accepted correction chain.
@@ -58,7 +62,7 @@ Use `validate_packet(decoded_object)` for a single JSON-shaped object and `valid
 | 04-incomplete.json | Rejected for missing away goals. |
 | 05-invalid-team.json | Rejected for malformed home ID. |
 | 06-conflicting-fixture.json | Valid in isolation. After 02 it conflicts with an existing fixture. |
-| 07-late-unknown.json | Accepted as a distinct completed fixture with later capture and explicitly unknown availability. |
+| 07-late-unknown.json | Accepted alone with later capture and explicitly unknown availability. In a batch with 02, R1 rejects its different fixture ID for the same event as `fixture_alias`. |
 | 08-correction.json | Accepted after 02, preserving both packet IDs. Rejected as a singleton batch. |
 
 Only the local invented protocol has been exercised. Actual producer compatibility, storage, rights clearance and independent historical evidence require later work.
