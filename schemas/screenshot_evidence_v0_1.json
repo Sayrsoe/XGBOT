@@ -1,0 +1,471 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ScreenshotBot to XGBOT invented evidence v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "packet_id",
+    "revision",
+    "correction",
+    "competition_id",
+    "season_id",
+    "source",
+    "captured_at_utc",
+    "recorded_at_utc",
+    "availability",
+    "payload"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.1"
+    },
+    "packet_id": {
+      "$ref": "#/$defs/id"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "correction": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/correction"
+        }
+      ]
+    },
+    "competition_id": {
+      "$ref": "#/$defs/id"
+    },
+    "season_id": {
+      "$ref": "#/$defs/id"
+    },
+    "source": {
+      "$ref": "#/$defs/source"
+    },
+    "captured_at_utc": {
+      "$ref": "#/$defs/utc"
+    },
+    "recorded_at_utc": {
+      "$ref": "#/$defs/utc"
+    },
+    "availability": {
+      "$ref": "#/$defs/availability"
+    },
+    "payload": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/league_snapshot"
+        },
+        {
+          "$ref": "#/$defs/completed_match"
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+    },
+    "utc": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "classification",
+        "reference",
+        "methodology_id"
+      ],
+      "properties": {
+        "classification": {
+          "const": "invented"
+        },
+        "reference": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "^invented:[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "methodology_id": {
+          "$ref": "#/$defs/id"
+        }
+      }
+    },
+    "availability": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ],
+          "properties": {
+            "status": {
+              "const": "unknown"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "earliest_verified_at_utc",
+            "evidence_ref"
+          ],
+          "properties": {
+            "status": {
+              "const": "verified"
+            },
+            "earliest_verified_at_utc": {
+              "$ref": "#/$defs/utc"
+            },
+            "evidence_ref": {
+              "$ref": "#/$defs/id"
+            }
+          }
+        }
+      ]
+    },
+    "correction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "predecessor_id",
+        "reason"
+      ],
+      "properties": {
+        "predecessor_id": {
+          "$ref": "#/$defs/id"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        }
+      }
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "verification",
+        "evidence_ref"
+      ],
+      "properties": {
+        "verification": {
+          "const": "verified"
+        },
+        "evidence_ref": {
+          "$ref": "#/$defs/id"
+        }
+      }
+    },
+    "goals": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "raw_text",
+        "value",
+        "unit",
+        "verification",
+        "evidence_ref"
+      ],
+      "properties": {
+        "raw_text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32,
+          "pattern": "^[0-9]+$"
+        },
+        "value": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unit": {
+          "const": "goals"
+        },
+        "verification": {
+          "const": "verified"
+        },
+        "evidence_ref": {
+          "$ref": "#/$defs/id"
+        }
+      }
+    },
+    "played": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "raw_text",
+        "value",
+        "unit",
+        "verification",
+        "evidence_ref"
+      ],
+      "properties": {
+        "raw_text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32,
+          "pattern": "^[0-9]+$"
+        },
+        "value": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unit": {
+          "const": "matches"
+        },
+        "verification": {
+          "const": "verified"
+        },
+        "evidence_ref": {
+          "$ref": "#/$defs/id"
+        }
+      }
+    },
+    "points": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "raw_text",
+        "value",
+        "unit",
+        "verification",
+        "evidence_ref"
+      ],
+      "properties": {
+        "raw_text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32,
+          "pattern": "^-?[0-9]+$"
+        },
+        "value": {
+          "type": "integer"
+        },
+        "unit": {
+          "const": "points"
+        },
+        "verification": {
+          "const": "verified"
+        },
+        "evidence_ref": {
+          "$ref": "#/$defs/id"
+        }
+      }
+    },
+    "xg": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "raw_text",
+        "value",
+        "unit",
+        "verification",
+        "evidence_ref"
+      ],
+      "properties": {
+        "raw_text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32,
+          "pattern": "^[0-9]+(?:\\.[0-9]+)?$"
+        },
+        "value": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32,
+          "pattern": "^[0-9]+(?:\\.[0-9]+)?$"
+        },
+        "unit": {
+          "const": "xG"
+        },
+        "verification": {
+          "const": "verified"
+        },
+        "evidence_ref": {
+          "$ref": "#/$defs/id"
+        }
+      }
+    },
+    "xpts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "raw_text",
+        "value",
+        "unit",
+        "verification",
+        "evidence_ref"
+      ],
+      "properties": {
+        "raw_text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32,
+          "pattern": "^[0-9]+(?:\\.[0-9]+)?$"
+        },
+        "value": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32,
+          "pattern": "^[0-9]+(?:\\.[0-9]+)?$"
+        },
+        "unit": {
+          "const": "points"
+        },
+        "verification": {
+          "const": "verified"
+        },
+        "evidence_ref": {
+          "$ref": "#/$defs/id"
+        }
+      }
+    },
+    "league_row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "team_id",
+        "identity_evidence",
+        "matches_played",
+        "total_xg",
+        "total_xga",
+        "actual_points"
+      ],
+      "properties": {
+        "team_id": {
+          "$ref": "#/$defs/id"
+        },
+        "identity_evidence": {
+          "$ref": "#/$defs/identity"
+        },
+        "matches_played": {
+          "$ref": "#/$defs/played"
+        },
+        "total_xg": {
+          "$ref": "#/$defs/xg"
+        },
+        "total_xga": {
+          "$ref": "#/$defs/xg"
+        },
+        "total_xpts": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/xpts"
+            }
+          ]
+        },
+        "actual_points": {
+          "$ref": "#/$defs/points"
+        }
+      }
+    },
+    "league_snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "snapshot_id",
+        "table_as_of_utc",
+        "basis",
+        "coverage",
+        "rows"
+      ],
+      "properties": {
+        "kind": {
+          "const": "league_snapshot"
+        },
+        "snapshot_id": {
+          "$ref": "#/$defs/id"
+        },
+        "table_as_of_utc": {
+          "$ref": "#/$defs/utc"
+        },
+        "basis": {
+          "const": "season_totals"
+        },
+        "coverage": {
+          "enum": [
+            "complete",
+            "partial"
+          ]
+        },
+        "rows": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/league_row"
+          }
+        }
+      }
+    },
+    "completed_match": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "fixture_id",
+        "kickoff_utc",
+        "period",
+        "identity_evidence",
+        "home_team_id",
+        "away_team_id",
+        "home_goals",
+        "away_goals",
+        "home_xg",
+        "away_xg"
+      ],
+      "properties": {
+        "kind": {
+          "const": "completed_match"
+        },
+        "fixture_id": {
+          "$ref": "#/$defs/id"
+        },
+        "kickoff_utc": {
+          "$ref": "#/$defs/utc"
+        },
+        "period": {
+          "const": "full_time_regulation"
+        },
+        "identity_evidence": {
+          "$ref": "#/$defs/identity"
+        },
+        "home_team_id": {
+          "$ref": "#/$defs/id"
+        },
+        "away_team_id": {
+          "$ref": "#/$defs/id"
+        },
+        "home_goals": {
+          "$ref": "#/$defs/goals"
+        },
+        "away_goals": {
+          "$ref": "#/$defs/goals"
+        },
+        "home_xg": {
+          "$ref": "#/$defs/xg"
+        },
+        "away_xg": {
+          "$ref": "#/$defs/xg"
+        }
+      }
+    }
+  }
+}

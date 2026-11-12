@@ -1,0 +1,65 @@
+{
+  "schema_version": "0.1",
+  "packet_id": "invented-table-one",
+  "revision": 1,
+  "correction": null,
+  "competition_id": "invented-league",
+  "season_id": "season-alpha",
+  "source": {
+    "classification": "invented",
+    "reference": "invented:training-panel",
+    "methodology_id": "invented-method"
+  },
+  "captured_at_utc": "2026-01-08T18:00:00Z",
+  "recorded_at_utc": "2026-01-08T18:05:00Z",
+  "availability": {
+    "status": "verified",
+    "earliest_verified_at_utc": "2026-01-08T18:00:00Z",
+    "evidence_ref": "invented-receipt-one"
+  },
+  "payload": {
+    "kind": "league_snapshot",
+    "snapshot_id": "table-one",
+    "table_as_of_utc": "2026-01-08T18:00:00Z",
+    "basis": "season_totals",
+    "coverage": "partial",
+    "rows": [
+      {
+        "team_id": "copper-vale",
+        "identity_evidence": {
+          "verification": "verified",
+          "evidence_ref": "row-header"
+        },
+        "matches_played": {
+          "raw_text": "3",
+          "value": 3,
+          "unit": "matches",
+          "verification": "verified",
+          "evidence_ref": "col-played"
+        },
+        "total_xg": {
+          "raw_text": "4.20",
+          "value": "4.20",
+          "unit": "xG",
+          "verification": "verified",
+          "evidence_ref": "col-xg"
+        },
+        "total_xga": {
+          "raw_text": "2.00",
+          "value": "2.00",
+          "unit": "xG",
+          "verification": "verified",
+          "evidence_ref": "col-xga"
+        },
+        "total_xpts": null,
+        "actual_points": {
+          "raw_text": "6",
+          "value": 6,
+          "unit": "points",
+          "verification": "verified",
+          "evidence_ref": "col-points"
+        }
+      }
+    ]
+  }
+}

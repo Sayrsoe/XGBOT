@@ -1,0 +1,61 @@
+{
+  "schema_version": "0.1",
+  "packet_id": "invented-correction",
+  "revision": 2,
+  "correction": {
+    "predecessor_id": "invented-match-one",
+    "reason": "Reviewer corrected the invented away xG transcription."
+  },
+  "competition_id": "invented-league",
+  "season_id": "season-alpha",
+  "source": {
+    "classification": "invented",
+    "reference": "invented:training-panel",
+    "methodology_id": "invented-method"
+  },
+  "captured_at_utc": "2026-01-08T18:00:00Z",
+  "recorded_at_utc": "2026-01-09T09:30:00Z",
+  "availability": {
+    "status": "unknown"
+  },
+  "payload": {
+    "kind": "completed_match",
+    "fixture_id": "fixture-one",
+    "kickoff_utc": "2026-01-08T15:00:00Z",
+    "period": "full_time_regulation",
+    "identity_evidence": {
+      "verification": "verified",
+      "evidence_ref": "invented-headers"
+    },
+    "home_team_id": "copper-vale",
+    "away_team_id": "indigo-park",
+    "home_goals": {
+      "raw_text": "1",
+      "value": 1,
+      "unit": "goals",
+      "verification": "verified",
+      "evidence_ref": "score-home"
+    },
+    "away_goals": {
+      "raw_text": "0",
+      "value": 0,
+      "unit": "goals",
+      "verification": "verified",
+      "evidence_ref": "score-away"
+    },
+    "home_xg": {
+      "raw_text": "1.40",
+      "value": "1.40",
+      "unit": "xG",
+      "verification": "verified",
+      "evidence_ref": "cell-home"
+    },
+    "away_xg": {
+      "raw_text": "0.85",
+      "value": "0.85",
+      "unit": "xG",
+      "verification": "verified",
+      "evidence_ref": "cell-away"
+    }
+  }
+}
