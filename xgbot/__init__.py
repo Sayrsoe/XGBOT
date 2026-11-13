@@ -1,0 +1,1 @@
+"""XGBOT offline evidence contracts."""
